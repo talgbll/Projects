@@ -1,1 +1,65 @@
 
+# Set of allowed characters (for DNA and RNA)
+valid_bases = set('ATGCU')
+user_sequence = input("Please enter a DNA or RNA sequence: ")
+    
+# Check for any characters in the input that are not in the valid set
+while set(user_sequence.upper()) - valid_bases:
+    print(f"Error: Invalid characters found in '{user_sequence.upper()}'. Please re-enter using only A, T, C, G, or U.")
+    user_sequence = input("Please enter a DNA or RNA sequence: ")
+else:
+    print(f"'{user_sequence.upper()}' is a valid sequence.")
+
+#time to calculate its GC content
+bases_to_count = 'G' or 'C'
+
+# Count 'G's and 'C's separately
+g_count = user_sequence.count('G')
+c_count = user_sequence.count('C')
+
+# Add the counts together for the total
+gc_total = g_count + c_count
+GCcontent = (gc_total/len(user_sequence)*100)
+round(GCcontent,1)
+print("The GC content is: {GCcontent}%")
+
+#time to transcribe it into RNA (if it wasn't before) 
+rna_sequence = user_sequence.replace('T', 'U')
+print(f'The new sequence is {rna_sequence.upper()}')
+
+#time to convert it to a string of amino acids
+#amino acid database
+codon_table = {
+    'AUA':'I', 'AUC':'I', 'AUU':'I', 'AUG':'M',
+    'ACA':'T', 'ACC':'T', 'ACG':'T', 'ACU':'T',
+    'AAC':'N', 'AAU':'N', 'AAA':'K', 'AAG':'K',
+    'AGC':'S', 'AGU':'S', 'AGA':'R', 'AGG':'R',                 
+    'CUA':'L', 'CUC':'L', 'CUG':'L', 'CUU':'L',
+    'CCA':'P', 'CCC':'P', 'CCG':'P', 'CCU':'P',
+    'CAC':'H', 'CAU':'H', 'CAA':'Q', 'CAG':'Q',
+    'CGA':'R', 'CGC':'R', 'CGG':'R', 'CGU':'R',
+    'GUA':'V', 'GUC':'V', 'GUG':'V', 'GUU':'V',
+    'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCU':'A',
+    'GAC':'D', 'GAU':'D', 'GAA':'E', 'GAG':'E',
+    'GGA':'G', 'GGC':'G', 'GGG':'G', 'GGU':'G',
+    'UCA':'S', 'UCC':'S', 'UCG':'S', 'UCU':'S',
+    'UUC':'F', 'UUU':'F', 'UUA':'L', 'UUG':'L',
+    'UAC':'Y', 'UAU':'Y', 'UAA':' STOP ', 'UAG':' STOP ',
+    'UGC':'C', 'UGU':'C', 'UGA':' STOP ', 'UGG':'W',
+}
+protein = ""
+for i in range(0, len(rna_sequence), 3):
+    codon = rna_sequence[i:i+3]
+    #to stop if the codon is < 3 
+    if len(codon) < 3:
+        break
+    
+    # Look up the codon to get the amino acid
+    amino_acid = codon_table.get(codon, '?') # '?' for unknown codons
+        
+    # Stop translation if a stop codon is found
+    if amino_acid == '_STOP_':
+        break
+            
+    protein += amino_acid
+print("The amino acid sequence is:", protein)
