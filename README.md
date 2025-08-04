@@ -1,8 +1,7 @@
 # Projects
 here i will be attempting to embark on a personal project for the aims of creating a portfolio.
-i will be analysing public datasets with varying degrees of difficulty but we shall see how this goes asf
+i will be analysing public datasets with python and R for different reasons
 
-Easy
 1. DNA/RNA/Protein Toolkit 
 What it is: A collection of simple scripts that perform fundamental molecular biology tasks.
 - Calculate GC content.
@@ -17,4 +16,4 @@ What it is: Find an interesting biological dataset and just explore it. Your goa
 - Summary statistics: Mean, median, standard deviation of relevant columns.
 - Visualizations: Create plots like histograms, box plots, and scatter plots to answer simple questions (e.g., "Does the expression of Gene X differ between healthy and tumor samples?"). Use libraries like Matplotlib/Seaborn (Python) or ggplot2 (R).
 
-Intermediate:
+
