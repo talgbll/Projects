@@ -16,4 +16,6 @@ What it is: Find an interesting biological dataset and just explore it. Your goa
 - Summary statistics: Mean, median, standard deviation of relevant columns.
 - Visualizations: Create plots like histograms, box plots, and scatter plots to answer simple questions (e.g., "Does the expression of Gene X differ between healthy and tumor samples?"). Use libraries like Matplotlib/Seaborn (Python) or ggplot2 (R).
 
+3. Personal coursework in school for R and Python examinations and reports.
+
 
