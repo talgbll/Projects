@@ -1,0 +1,178 @@
+MyDF <- read.csv("C:/Users/New Asus/OneDrive - Imperial College London/R land/EcolArchives-E089-51-D1.csv")
+setwd("C:/Users/New Asus/OneDrive - Imperial College London/R land")
+getwd()
+dim(MyDF) #check the size of the data frame we've loaded
+str(MyDF) #this shows us what the data contains
+
+require(tidyverse)
+glimpse(MyDF) #dplyr way to do data inspection
+
+MyDF$Type.of.feeding.interaction <- as.factor(MyDF$Type.of.feeding.interaction)
+MyDF$Location <- as.factor(MyDF$Location)
+str(MyDF)
+
+#plot a scatter kinda of predator mass vs prey mass
+plot(MyDF$Predator.mass, MyDF$Prey.mass)
+#but this isn't exactly helpful so we need to use logarithms to convert it to be more meaningful
+
+#log10 to compare based on magnitudes
+plot(log10(MyDF$Predator.mass), log10(MyDF$Prey.mass))
+
+#change marker pch is like plot characters (thats what it stands for)
+plot(log10(MyDF$Predator.mass), log10(MyDF$Prey.mass),pch=20)
+
+plot(log10(MyDF$Predator.mass),log10(MyDF$Prey.mass),pch=20, xlab = "Predator Mass (g)", ylab = "Prey Mass (g)") # Add labels
+
+#histogram, but the data is heavily skewed so we have to log it
+hist(MyDF$Predator.mass)
+hist(log10(MyDF$Predator.mass), xlab = "log10(Predator Mass (g))", ylab = "Count") # include labels
+hist(log10(MyDF$Predator.mass),xlab="log10(Predator Mass (g))",ylab="Count", 
+     col = "lightblue", border = "pink") # Change bar and borders colors 
+
+#subplots
+par(mfcol=c(2,1)) #initialize multi-paneled plot
+par(mfg = c(1,1)) # specify which sub-plot to use first 
+hist(log10(MyDF$Predator.mass),
+     xlab = "log10(Predator Mass (g))", ylab = "Count", col = "lightblue", border = "pink", 
+     main = 'Predator') # Add title
+par(mfg = c(2,1)) # Second sub-plot
+hist(log10(MyDF$Prey.mass), xlab="log10(Prey Mass (g))",ylab="Count", col = "lightgreen", border = "pink", main = 'prey')
+
+#overlaying plots
+hist(log10(MyDF$Predator.mass), # Predator histogram
+     xlab="log10(Body Mass (g))", ylab="Count", 
+     col = rgb(1, 0, 0, 0.5), # Note 'rgb', fourth value is transparency
+     main = "Predator-prey size Overlap") 
+hist(log10(MyDF$Prey.mass), col = rgb(0, 0, 1, 0.5), add = T) # Plot prey
+legend('topleft',c('Predators','Prey'),   # Add legend
+       fill=c(rgb(1, 0, 0, 0.5), rgb(0, 0, 1, 0.5))) # Define legend colors
+
+#box plot for summarising data
+boxplot(log10(MyDF$Predator.mass), xlab = "Location", ylab = "log10(Predator Mass)", main = "Predator mass")
+
+boxplot(log(MyDF$Predator.mass) ~ MyDF$Location, # Why the tilde?
+        xlab = "Location", ylab = "Predator Mass",
+        main = "Predator mass by location")
+
+boxplot(log(MyDF$Predator.mass) ~ MyDF$Type.of.feeding.interaction,
+        xlab = "Location", ylab = "Predator Mass",
+        main = "Predator mass by feeding interaction type")
+
+#combining plot types
+par(fig=c(0,0.8,0,0.8)) # specify figure size as proportion
+plot(log(MyDF$Predator.mass),log(MyDF$Prey.mass), xlab = "Predator Mass (g)", ylab = "Prey Mass (g)") # Add labels
+par(fig=c(0,0.8,0.4,1), new=TRUE)
+boxplot(log(MyDF$Predator.mass), horizontal=TRUE, axes=FALSE)
+par(fig=c(0.55,1,0,0.8),new=TRUE)
+boxplot(log(MyDF$Prey.mass), axes=FALSE)
+mtext("Fancy Predator-prey scatterplot", side=3, outer=TRUE, line=-3)
+#To understand this plotting method, think of the full graph area as going from (0,0) in the lower left 
+#corner to (1,1) in the upper right corner. The format of the fig= parameter is a numerical vector of the form 
+#c(x1, x2, y1, y2), corresponding to c(bottom, left, top, right). First, par(fig=c(0,0.8,0,0.8)) sets up the 
+#scatterplot going from 0 to 0.8 on the x axis and 0 to 0.8 on the y axis, leaving some area for the boxplots
+#at the top and right. The top boxplot goes from 0 to 0.8 on the x axis and 0.4 to 1 on the y axis. 
+#The right hand boxplot goes from 0.55 to 1 on the x axis and 0 to 0.8 on the y axis. 
+#You can experiment with these proportions to change the spacings between plots.
+
+#save as pdf
+pdf("C:/Users/New Asus/OneDrive - Imperial College London/R land/Pred_Prey_Overlay.pdf", # Open blank pdf page using a relative path
+    11.7, 8.3) # These numbers are page dimensions in inches
+hist(log(MyDF$Predator.mass), # Plot predator histogram (note 'rgb')
+     xlab="Body Mass (g)", ylab="Count", col = rgb(1, 0, 0, 0.5), main = "Predator-Prey Size Overlap") 
+hist(log(MyDF$Prey.mass), # Plot prey weights
+     col = rgb(0, 0, 1, 0.5), 
+     add = T)  # Add to same plot = TRUE
+legend('topleft',c('Predators','Prey'), # Add legend
+       fill=c(rgb(1, 0, 0, 0.5), rgb(0, 0, 1, 0.5))) 
+graphics.off(); #you can also use dev.off() 
+
+#qplot can be used to quickly produxe graphics for exploratory data analysis and as a base for more complex graphics.
+require(ggplot2)
+qplot(Prey.mass,Predator.mass, data=MyDF)
+#butwetakethelogarithm
+qplot(log10(Prey.mass),log10(Predator.mass, data=MyDF))
+#ok now we want to colour it and the aspect ratio = 1 
+qplot(log10(Prey.mass),log10(Predator.mass, data=MyDF, colour = Type.of.feeding.interaction, asp =1))
+#but now changing the shape
+qplot(log10(Prey.mass),log10(Predator.mass, data=MyDF, shape = Type.of.feeding.interaction, asp =1))
+#using the I() command changes it to the original formatting becos like below will give u ggplot's red but if u do colour=I('red') then itll change.
+qplot(log(Prey.mass), log(Predator.mass), data = MyDF, colour = "red")
+#vs
+qplot(log(Prey.mass), log(Predator.mass), data = MyDF, colour = I("red"))
+
+qplot(log(Prey.mass), log(Predator.mass), data = MyDF, size = 3) 
+#with ggplot size mapping
+qplot(log(Prey.mass), log(Predator.mass),  data = MyDF, size = I(3)) 
+#no mapping
+
+qplot(log(Prey.mass), log(Predator.mass), data = MyDF, shape = 3)
+#this above ^ will give an error so instead us:
+qplot(log(Prey.mass), log(Predator.mass), data = MyDF, shape= I(3))
+
+#to make the points semi-transparent, alpha function.
+qplot(log(Prey.mass), log(Predator.mass), data = MyDF, colour = Type.of.feeding.interaction, alpha = I(.5))
+
+#adds and smoother to the points.
+qplot(log(Prey.mass), log(Predator.mass), data = MyDF, geom = c("point", "smooth"))
+#`geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
+
+#include linear regression
+qplot(log(Prey.mass), log(Predator.mass), data = MyDF, geom = c("point", "smooth")) + geom_smooth(method = "lm")
+#lm stands for linear models. Linear regression is a type of linear model.
+
+qplot(log(Prey.mass), log(Predator.mass), data = MyDF, geom = c("point", "smooth"), colour = Type.of.feeding.interaction) + geom_smooth(method = "lm")
+#We can also add a “smoother” for each type of interaction:
+
+qplot(log(Prey.mass), log(Predator.mass), data = MyDF, geom = c("point", "smooth"),
+      colour = Type.of.feeding.interaction) + geom_smooth(method = "lm",fullrange = TRUE)
+#to extend lines to the full range.
+
+qplot(Type.of.feeding.interaction, log(Prey.mass/Predator.mass), data = MyDF) #Now let’s see how the ratio between prey and predator mass changes according to the type of interaction:
+qplot(Type.of.feeding.interaction, log(Prey.mass/Predator.mass), data = MyDF, geom = "jitter")
+#Because there are so many points, we can “jitter” them to get a better idea of the spread:
+#boxplot
+qplot(Type.of.feeding.interaction, log(Prey.mass/Predator.mass), data = MyDF, geom = "boxplot")
+#Or we can draw a boxplot of the data (note the geom argument, which stands for geometry):
+
+qplot(log(Prey.mass/Predator.mass), data = MyDF, geom =  "histogram")
+#`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+qplot(log(Prey.mass/Predator.mass), data = MyDF, geom =  "histogram", 
+      fill = Type.of.feeding.interaction)
+#colour histogram based on interaction type
+
+qplot(log(Prey.mass/Predator.mass), data = MyDF, geom =  "histogram", 
+      fill = Type.of.feeding.interaction, binwidth = 1)
+#define own bin width
+
+qplot(log(Prey.mass/Predator.mass), data = MyDF, geom =  "density", 
+      fill = Type.of.feeding.interaction)
+#smoooooth density
+qplot(log(Prey.mass/Predator.mass), data = MyDF, geom =  "density", 
+      fill = Type.of.feeding.interaction, 
+      alpha = I(0.5))
+#transparent stype (once again using alpha=I())
+
+qplot(log(Prey.mass/Predator.mass), data = MyDF, geom =  "density", 
+      colour = Type.of.feeding.interaction)
+#or using colour instead of fill draws only the edge of the curve:
+#Similarly, geom = "bar" produces a barplot, geom = "line" a series of points joined by a line, etc.
+
+qplot(log(Prey.mass/Predator.mass), facets = Type.of.feeding.interaction ~., data = MyDF, geom =  "density")
+#An alternative way of displaying data belonging to different classes is using “faceting”:
+#The ~. (the space is not important) notation tells ggplot whether to do the faceting by row or by column. So if you want a by-column configuration, switch ~ and ., and also swap the position of the .~:
+qplot(log(Prey.mass/Predator.mass), facets =  .~ Type.of.feeding.interaction, data = MyDF, geom =  "density")
+#side by side arrangement rather than one on top of another.
+
+#log plots
+qplot(Prey.mass, Predator.mass, data = MyDF, log="xy")
+qplot(Prey.mass, Predator.mass, data = MyDF, log="xy",
+      main = "Relation between predator and prey mass", 
+      xlab = "log(Prey mass) (g)", 
+      ylab = "log(Predator mass) (g)")
+#annotated.
+qplot(Prey.mass, Predator.mass, data = MyDF, log="xy",
+      main = "Relation between predator and prey mass", 
+      xlab = "Prey mass (g)", 
+      ylab = "Predator mass (g)") + theme_bw()
+#theme_bw makes it suitable for black and white printing
