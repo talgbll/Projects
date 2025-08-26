@@ -176,3 +176,119 @@ qplot(Prey.mass, Predator.mass, data = MyDF, log="xy",
       xlab = "Prey mass (g)", 
       ylab = "Predator mass (g)") + theme_bw()
 #theme_bw makes it suitable for black and white printing
+
+#clear workspace
+rm(list = ls())
+
+getwd()
+setwd("C:/Users/New Asus/OneDrive - Imperial College London/R land")
+
+#get a random ass array of numbers (1 to 10 and 25 of them)
+Crows <- sample(1:10, 25,replace = TRUE)
+Sparrows <- sample(1:10, 25,replace = TRUE)
+Hawk <- sample(1:10, 25,replace = TRUE)
+
+#stats things
+median(Crows)
+mean(Crows)
+summary(Crows)
+
+#variable type
+class(Crows)
+
+#create a dataframe using the stuff as headers
+birds <- data.frame(Crows, Sparrows, Hawk)
+View(birds) #okay lit u can see the data now in a table ish form
+summary(birds) #lit af
+mean(birds$Crows) #you can access columns within dataframes using the $
+
+#what is the 2nd element of crows
+Crows[2]
+Crows[2] <- "Dog" #you can change a specific one
+#but now its all characters
+class(Crows)
+Crows[2:10]
+Crows[c(2,4,6,8,10)]
+birds[22,3] #specific row and column within dataframe
+
+#subsetting our data
+subset_crow <- subset(birds, Crows>5)
+View(subset_crow)
+
+####################################################
+#visualising data
+library("lattice")
+library("dplyr")
+data("iris")
+
+#barchart
+petal.width_mean <- iris%>%group_by(Species)%>%summarise(Petal_Width=mean(Petal.Width))
+View(petal.width_mean)
+petal.width <- barchart(Petal_Width~Species, data = petal.width_mean)
+#the squigly line is like xx against xx
+print(petal.width) #love
+
+#boxplot
+boxplot_b_pw <- boxplot(Petal.Width~Species, data= iris)
+print(boxplot_b_pw)
+boxplot_pw <- bwplot(Petal.Width~Species, data=iris)
+print(boxplot_pw)
+#two different versions of box plots provided by the diff packages
+
+#histogram
+hist_pw <- hist(iris$Petal.Width)
+histo_pw <- histogram(~Petal.Width, data=iris)
+print(histo_pw)
+
+#scatterplots
+scatt_pw <- plot(Petal.Width~Sepal.Width, data=iris)
+scatter_pw <- xyplot(Petal.Width~Sepal.Width, data=iris)
+print(scatter_pw)
+
+#Scatter with groups
+scatter_g_pw <- xyplot(Petal.Width~Sepal.Width, data=iris, groups=Species)
+print(scatter_g_pw)
+
+#Scatter with facets
+scatter_f_pw <- xyplot(Petal.Width~Sepal.Width | Species, data=iris)
+print(scatter_f_pw)
+#interesting. it separates the scatterplots by the species
+
+#horizontal scatter
+scatter_h_pw <- xyplot(Petal.Width~Sepal.Width|Species, data=iris, layout=c(3,1))
+print(scatter_h_pw)
+
+#vertical scatter
+scatter_v_pw <- xyplot(Petal.Width~Sepal.Width|Species, data=iris, layout=c(1,3))
+print(scatter_v_pw)
+#the bracket denotes columns then rows LOL
+
+#adding titles
+boxplot_t_pw <- bwplot(Petal.Width~Species, data=iris, xlab="Iris Species", ylab="Petal Width (cm)")
+print(boxplot_t_pw)
+boxplot_t2_pw <- bwplot(Petal.Width~Species, data=iris, xlab=list(label="Iris Species", cex=2), ylab="Petal Width (cm)")
+print(boxplot_t2_pw)
+#the cex is a factor change of the size of in this case the x label.
+
+#colours
+scatter_c_pw <- xyplot(Petal.Width~Sepal.Width, data=iris, par.settings=simpleTheme(col="red"), xlab="Sepal Width (cm)", ylab="Petal Width (cm)")
+print(scatter_c_pw)
+palette() #shows available colours
+
+#character type and size
+scatter_pch1_pw <- xyplot(Petal.Width~Sepal.Width, data=iris, par.settings=simpleTheme(pch=1))
+print(scatter_pch1_pw)
+scatter_pch2_pw <- xyplot(Petal.Width~Sepal.Width, data=iris, par.settings=simpleTheme(pch=2))
+print(scatter_pch2_pw) #triangles
+scatter_pch3_pw <- xyplot(Petal.Width~Sepal.Width, data=iris, par.settings=simpleTheme(pch=2, cex=2))
+print(scatter_pch3_pw) 
+
+#making multiple figures
+getwd()
+pdf("C:/Users/New Asus/OneDrive - Imperial College London/R land/graphs.pdf")
+par(mfcol=c(2,2)) #only works for R's base graphics
+hist(iris$Petal.Width,xlab="Petal Width (cm)", ylab="Frequency", main="")
+boxplot(Petal.Width~Species, data=iris, xlab="Iris species", ylab="Petal Width (cm)")
+plot(Petal.Width~Sepal.Width, data=iris, pch=1, col="red", cex=1)
+plot(Petal.Width~Sepal.Width, data=iris, pch=2, col="blue", cex=1, xlab="aj", ylab="omg")
+dev.off()
